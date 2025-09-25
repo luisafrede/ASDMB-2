@@ -70,6 +70,20 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
+    /***********************
+     * ADD START SCREEN HERE
+     ***********************/
+    function StartScreen({onStart}) {
+        return React.createElement("div", {style: {textAlign: "center", marginTop: "100px"}},
+            React.createElement("h2", null, "Welcome to the Stroop Experiment"),
+            React.createElement("p", null, "Press the button below to begin."),
+            React.createElement("button", {
+                style: {padding: "10px 20px", fontSize: "16px", marginTop: "20px"},
+                onClick: onStart
+            }, "Start Experiment")
+        );
+    }
+
     async function getCondition(db, study, pId = null) {
         const metaRef = doc(db, study, "autora_meta");
         return await runTransaction(db, async (tx) => {
@@ -195,11 +209,22 @@
         }
     }
 
-    // Go!
-    index().catch((e) => {
-        console.error(e);
-        root.render(React.createElement(React.StrictMode, null, React.createElement(ErrorView, {message: "Unexpected error. Check console."})));
-    });
+    root.render(React.createElement(
+    React.StrictMode,
+    null,
+    React.createElement(StartScreen, {
+        onStart: () => {
+        setStatus("Fetching condition…");
+        index().catch((e) => {
+            console.error(e);
+            root.render(React.createElement(
+            React.StrictMode, null,
+            React.createElement(ErrorView, { message: "Unexpected error. Check console." })
+            ));
+        });
+        }
+    })
+    ));
 </script>
 </body>
 </html>
